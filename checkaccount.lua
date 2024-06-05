@@ -1,5 +1,5 @@
 
-Urlsent = gengenv().Webhook
+Urlsent = "https://discord.com/api/webhooks/1227538406716866623/lkC5aen_VL4LMBuc8roaydmgb2XA0c5-wHGOh2Lk3pxfbyxx91h8rMEO05oxrfnrac7j"
 
 function GetAwaken()
     ReturnText = ""
