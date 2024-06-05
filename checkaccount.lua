@@ -247,7 +247,7 @@ local data = {
                 },
                 {
                     ["name"] = "Fruit Store: ",
-                    ["value"] = "```\n" ..fruitsString.. "```",
+                    ["value"] = fruitsString,
                     ["inline"] = true
                 },
             },
