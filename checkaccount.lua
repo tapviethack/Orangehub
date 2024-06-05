@@ -75,15 +75,19 @@ function GetAwaken()
 end
 --Rate
 function Get(Rare)
-    local RareNumber
-    if Rare == "a" then
+    if Rare == "Common" then
+        RareNumber = 0
+    elseif Rare == "Uncommon" then
+        RareNumber = 1
+    elseif Rare == "Rare" then
+        RareNumber = 2
+    elseif Rare == "Legendary" then
         RareNumber = 3
-    elseif Rare == "b" then
+    elseif Rare == "Mythical" then
         RareNumber = 4
     else
         return "Wrong Input"
     end
-    
     local ReturnText = ""
     for i,v in pairs(game:GetService("ReplicatedStorage").Remotes["CommF_"]:InvokeServer("getInventoryWeapons")) do
         if type(v) == "table" then
@@ -94,123 +98,57 @@ function Get(Rare)
             end
         end
     end
-    
     if ReturnText ~= "" then
-        return ReturnText
+        return "✅\n" .. ReturnText
     else
-        return "Not Have"
+        return "❌"
     end
 end
 
-local itemsToCheck = {
-    "Valkyrie Helmet",
-    "True Triple Katana",
-    "Swan Glasses",
-    "Cursed Dual Katana",
-    "Mirror Fractal"
-}
-
-local fields = {}
-
-for _, item in ipairs(itemsToCheck) do
-    local hasItem = false
-    for _, rarity in ipairs({"a", "b"}) do
-        local items = Get(rarity)
-        if string.find(items, item) then
-            hasItem = true
-            break
-        end
-    end
-    table.insert(fields, hasItem and "✅" or "❌")
-end
---Melee Check
-
---FruitCheck
--- Predefined order for sorting fruits
-local predefinedOrder = {
-    "Kitsune-Kitsune",
-    "Leopard-Leopard",
-    "Dragon-Dragon",
-    "Spirit-Spirit",
-    "Control-Control",
-    "Venom-Venom",
-    "Shadow-Shadow",
-    "Dough-Dough",
-    "T-Rex-T-Rex",
-    "Mammoth-Mammoth",
-    "Gravity-Gravity",
-    "Blizzard-Blizzard",
-    "Pain-Pain",
-    "Rumble-Rumble",
-    "Portal-Portal",
-    "Phoenix-Phoenix",
-    "Sound-Sound",
-    "Spider-Spider",
-    "Love-Love",
-    "Buddha-Buddha",
-    "Quake-Quake",
-    "Magma-Magma",
-    "Ghost-Ghost",
-    "Barrier-Barrier",
-    "Rubber-Rubber",
-    "Light-Light",
-    "Diamond-Diamond",
-    "Dark-Dark",
-    "Sand-Sand",
-    "Ice-Ice",
-    "Falcon-Falcon",
-    "Flame-Flame",
-    "Spike-Spike",
-    "Smoke-Smoke",
-    "Bomb-Bomb",
-    "Spring-Spring",
-    "Chop-Chop",
-    "Spin-Spin",
-    "Rocket-Rocket"
-}
-
--- Helper function to get the index of a fruit in the predefined order
-local function getOrderIndex(fruit)
-    for index, name in ipairs(predefinedOrder) do
-        if fruit == name then
-            return index
-        end
-    end
-    return #predefinedOrder + 1 -- If the fruit is not found, it will be placed at the end
-end
-
--- Custom sort function based on the predefined order
-function CustomSort(a, b)
-    local indexA = getOrderIndex(a)
-    local indexB = getOrderIndex(b)
-    return indexA < indexB
-end
-
--- Function to get all fruits in inventory
+-- Fruit Check
 function GetAllFruitsInInventory()
     local fruits = {}
-
     for _, v in pairs(game:GetService("ReplicatedStorage").Remotes["CommF_"]:InvokeServer("getInventoryFruits")) do
         if type(v) == "table" and v.Name then
             table.insert(fruits, v.Name)
         end
     end
-
     return fruits
 end
-
--- Lấy danh sách tất cả trái cây trong kho và sắp xếp theo thứ tự đã định trước
-local allFruits = GetAllFruitsInInventory()
-table.sort(allFruits, CustomSort)
-
--- Tạo chuỗi danh sách trái cây
-local fruitsString = "```"
-for _, fruitName in ipairs(allFruits) do
-    fruitsString = fruitsString .. fruitName .. "\n"
+--Check melee
+local function CheckMelee(meleeName, hasMeleeVariable)
+    local args = {
+        [1] = meleeName,
+        [2] = true
+    }
+    local buyResult = tonumber(game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args)))
+    if buyResult and buyResult == 1 then
+        hasMeleeVariable = true
+    end
+    return hasMeleeVariable
 end
-fruitsString = fruitsString .. "```"
 
-
+local HasTalon = CheckMelee("BuyDragonTalon", false)
+local HasSuperhuman = CheckMelee("BuySuperhuman", false)
+local HasKarate = CheckMelee("BuySharkmanKarate", false)
+local HasDeathStep = CheckMelee("BuyDeathStep", false)
+local HasElectricClaw = CheckMelee("BuyElectricClaw", false)
+local HasGodhuman = CheckMelee("BuyGodhuman", false)
+local HasSanguineArt = CheckMelee("BuySanguineArt", false)
+local function formatMeleeStatus(meleeName, status)
+    local icon = status and "✅" or "❌"
+    return meleeName .. ": " .. icon
+end
+local meleeValue = string.format("%s\n%s\n%s\n%s\n%s\n%s\n%s",
+    formatMeleeStatus("Superhuman", HasSuperhuman),
+    formatMeleeStatus("Sharkman Karate", HasKarate),
+    formatMeleeStatus("Death Step", HasDeathStep),
+    formatMeleeStatus("Electric Claw", HasElectricClaw),
+    formatMeleeStatus("Dragon Talon", HasTalon),
+    formatMeleeStatus("God Human", HasGodhuman),
+    formatMeleeStatus("SanguineArt", HasSanguineArt)
+)
+print(meleeValue)
 
 local data = {
     ["content"] = "",
@@ -256,27 +194,46 @@ local data = {
                     ["inline"] = false
                 },
                 {
-				    ["name"] = "Awakened: ",
-				    ["value"] = "```"..tostring(GetAwaken()).."```",
+                    ["name"] = "Awakened: ",
+                    ["value"] = "```"..tostring(GetAwaken()).."```",
                     ["inline"] = true
-				},
+                },
                 {
                     ["name"] = "Melee: ",
-                    ["value"] = "```NhuDai```",
+                    ["value"] = "```" ..meleeValue.. "```",
                     ["inline"] = false
                 },
                 {
-                    ["name"] = "Item: ",
-                    ["value"] = "```\n"..table.concat(fields, "\n").."```",
-                    ["inline"] = false
+                    ["name"] = "Common Weapons: ",
+                    ["value"] = Get("Common"),
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Uncommon Weapons: ",
+                    ["value"] = Get("Uncommon"),
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Rare Weapons: ",
+                    ["value"] = Get("Rare"),
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Legendary Weapons: ",
+                    ["value"] = Get("Legendary"),
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Mythical Weapons: ",
+                    ["value"] = Get("Mythical"),
+                    ["inline"] = true
                 },
                 {
                     ["name"] = "Fruit Store: ",
-                    ["value"] = fruitsString,
+                    ["value"] = "```\n" ..table.concat(GetAllFruitsInInventory(), "\n").. "```",
                     ["inline"] = true
                 },
-
-			},     
+            },
         },
         ["thumbnail"] = {
             ["url"] = "",
@@ -285,8 +242,9 @@ local data = {
             ["text"] = "Orange Hub | Check Account with Webhooks",
         },
         ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ"),
-        }
     }
+}
+
 local Data = game:GetService("HttpService"):JSONEncode(data)
 local Head = {["content-type"] = "application/json"}
 Send = http_request or request or HttpPost or syn.request 
