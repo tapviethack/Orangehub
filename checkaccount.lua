@@ -99,22 +99,40 @@ function Get(Rare)
         end
     end
     if ReturnText ~= "" then
-        return "✅\n" .. ReturnText
+        return ReturnText
     else
-        return "❌"
+        return 
     end
 end
 
 -- Fruit Check
 function GetAllFruitsInInventory()
     local fruits = {}
+
     for _, v in pairs(game:GetService("ReplicatedStorage").Remotes["CommF_"]:InvokeServer("getInventoryFruits")) do
+
         if type(v) == "table" and v.Name then
-            table.insert(fruits, v.Name)
+            table.insert(fruits, v)
         end
     end
+
     return fruits
 end
+
+local allFruits = GetAllFruitsInInventory()
+-- Sort
+table.sort(allFruits, function(a, b)
+    local beliA = tonumber(a.Price) or 1000000
+    local beliB = tonumber(b.Price) or 0
+    return beliA < beliB
+end)
+
+-- Tạo string
+local fruitsString = "```"
+for _, fruit in ipairs(allFruits) do
+    fruitsString = fruitsString .. fruit.Name .. " - Beli: " .. fruit.Price .. "\n"
+end
+fruitsString = fruitsString .. "```"
 --Check melee
 local function CheckMelee(meleeName, hasMeleeVariable)
     local args = {
@@ -148,7 +166,6 @@ local meleeValue = string.format("%s\n%s\n%s\n%s\n%s\n%s\n%s",
     formatMeleeStatus("God Human", HasGodhuman),
     formatMeleeStatus("SanguineArt", HasSanguineArt)
 )
-print(meleeValue)
 
 local data = {
     ["content"] = "",
@@ -191,7 +208,7 @@ local data = {
                 {
                     ["name"] = "Race: ",
                     ["value"] = "```"..game:GetService("Players").LocalPlayer.Data.Race.Value.."```",
-                    ["inline"] = false
+                    ["inline"] = true
                 },
                 {
                     ["name"] = "Awakened: ",
@@ -201,36 +218,36 @@ local data = {
                 {
                     ["name"] = "Melee: ",
                     ["value"] = "```" ..meleeValue.. "```",
-                    ["inline"] = false
+                    ["inline"] = true
                 },
                 {
                     ["name"] = "Common Weapons: ",
-                    ["value"] = Get("Common"),
+                    ["value"] = "```\n"..Get("Common").."```",
                     ["inline"] = true
                 },
                 {
                     ["name"] = "Uncommon Weapons: ",
-                    ["value"] = Get("Uncommon"),
+                    ["value"] = "```\n"..Get("Uncommon").."```",
                     ["inline"] = true
                 },
                 {
                     ["name"] = "Rare Weapons: ",
-                    ["value"] = Get("Rare"),
+                    ["value"] = "```\n"..Get("Rare").."```",
                     ["inline"] = true
                 },
                 {
                     ["name"] = "Legendary Weapons: ",
-                    ["value"] = Get("Legendary"),
+                    ["value"] = "```\n"..Get("Legendary").."```",
                     ["inline"] = true
                 },
                 {
                     ["name"] = "Mythical Weapons: ",
-                    ["value"] = Get("Mythical"),
+                    ["value"] = "```\n"..Get("Mythical").."```",
                     ["inline"] = true
                 },
                 {
                     ["name"] = "Fruit Store: ",
-                    ["value"] = "```\n" ..table.concat(GetAllFruitsInInventory(), "\n").. "```",
+                    ["value"] = "```\n" ..fruitsString.. "```",
                     ["inline"] = true
                 },
             },
