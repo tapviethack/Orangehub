@@ -108,31 +108,25 @@ end
 -- Fruit Check
 function GetAllFruitsInInventory()
     local fruits = {}
-
     for _, v in pairs(game:GetService("ReplicatedStorage").Remotes["CommF_"]:InvokeServer("getInventoryFruits")) do
-
         if type(v) == "table" and v.Name then
             table.insert(fruits, v)
         end
     end
-
     return fruits
 end
 
 local allFruits = GetAllFruitsInInventory()
--- Sort
 table.sort(allFruits, function(a, b)
     local beliA = tonumber(a.Price) or 1000000
     local beliB = tonumber(b.Price) or 0
     return beliA < beliB
 end)
 
--- Tạo string
-local fruitsString = "```"
+local fruitsString = ""
 for _, fruit in ipairs(allFruits) do
-    fruitsString = fruitsString .. fruit.Name .. " - Beli: " .. fruit.Price .. "\n"
+    fruitsString = fruitsString .. fruit.Name .. "\n"
 end
-fruitsString = fruitsString .. "```"
 --Check melee
 local function CheckMelee(meleeName, hasMeleeVariable)
     local args = {
@@ -247,8 +241,8 @@ local data = {
                 },
                 {
                     ["name"] = "Fruit Store: ",
-                    ["value"] = fruitsString,
-                    ["inline"] = true
+                    ["value"] = "```\n" ..fruitsString.. "```",
+                    ["inline"] = false
                 },
             },
         },
