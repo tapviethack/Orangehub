@@ -1,4 +1,5 @@
-Urlsent = "https://discord.com/api/webhooks/1227538406716866623/lkC5aen_VL4LMBuc8roaydmgb2XA0c5-wHGOh2Lk3pxfbyxx91h8rMEO05oxrfnrac7j"
+
+Urlsent = gengenv().Webhook
 
 function GetAwaken()
     ReturnText = ""
@@ -256,8 +257,15 @@ local data = {
     }
 }
 
-local Data = game:GetService("HttpService"):JSONEncode(data)
-local Head = {["content-type"] = "application/json"}
-Send = http_request or request or HttpPost or syn.request 
-local sendhook = {Url = Urlsent, Body = Data, Method = "POST", Headers = Head}
-Send(sendhook)
+local function SendDataToWebhook()
+    local Data = game:GetService("HttpService"):JSONEncode(data)
+    local Head = {["content-type"] = "application/json"}
+    local Send = http_request or request or HttpPost or syn.request 
+    local sendhook = {Url = Urlsent, Body = Data, Method = "POST", Headers = Head}
+    Send(sendhook)
+end
+while true do
+    SendDataToWebhook()
+    wait(1)
+end
+
