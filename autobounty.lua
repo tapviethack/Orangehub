@@ -613,8 +613,6 @@ function SkipPlayer()
     getgenv().targ = nil
     target()
 end
-print("Ring2", SkipPlayer())
-print("Ring3", target())
 --Invisible
 if getgenv().Setting.StartHunting.Invisible then
     function Module.Invisible(bool)
@@ -695,7 +693,6 @@ function target()
             end)
         if p == nil then hopserver = true end 
         getgenv().targ = p
-        print("Ring1",p)
     end
 spawn(function()
     while wait() do
